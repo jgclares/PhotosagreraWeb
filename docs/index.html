@@ -3,27 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Q‹ESTIONARI DE PUNTUACIONS</title>
+    <title>Q√úESTIONARI DE PUNTUACIONS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilos personalizados para el gradiente del tÌtulo */
+        /* Estilos personalizados para el gradiente del t√≠tulo */
         .gradient-text {
             background-image: linear-gradient(to right, #60a5fa, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* Estilos para el contenedor de la cuadrÌcula en pantallas pequeÒas */
+        /* Estilos para el contenedor de la cuadr√≠cula en pantallas peque√±as */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(14, 1fr); /* Ajuste para las nuevas 13 columnas de puntuaciÛn + la de foto */
+            grid-template-columns: 80px repeat(13, 1fr); /* A√±adido 80px para la foto */
             gap: 0.5rem;
         }
         
         @media (max-width: 640px) {
             .grid-container {
-                grid-template-columns: 1fr; /* Columna ˙nica en mÛviles para millor visualitzaciÛ */
+                grid-template-columns: 1fr; /* Columna √∫nica en m√≤bils per a millor visualitzaci√≥ */
             }
+        }
+
+        /* Estilo para el contenedor de foto */
+        .photo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            width: 80px;
+            border-radius: 0.5rem;
+            background-color: #111827;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .photo-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0.5rem;
         }
 
         /* Estilo para los botones de las celdas */
@@ -57,12 +83,65 @@
             background-color: rgba(99, 102, 241, 0.2); /* indigo-700/20 */
             color: #a5b4fc; /* indigo-400 */
         }
+
+        /* Estilo para modal de imagen a pantalla completa */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .image-modal img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+
+        .image-modal-close:hover {
+            color: #a5b4fc;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-4 pt-8">
-    <div class="w-full max-w-4xl">
+    <div class="w-full max-w-6xl">
         <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-8 gradient-text">
-            Q¸estionari de PuntuaciÛ 
+            Q√ºestionari de Puntuaci√≥ 
         </h1>
 
         <div id="jurado-name-section" class="flex flex-col items-center justify-center space-y-4">
@@ -73,7 +152,7 @@
 
 
             <button id="start-quiz-button" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out">
-                ComenÁar VotaciÛ
+                Comen√ßar Votaci√≥
             </button>
         </div>
 
@@ -87,15 +166,23 @@
 
             <div class="mt-8 text-center">
                 <p id="validation-message" class="text-red-500 mb-4 hidden font-medium text-sm">
-                    Falten puntuacions en algunes fotos. Si us plau, revisa i completa la votaciÛ.
+                    Falten puntuacions en algunes fotos. Si us plau, revisa i completa la votaci√≥.
                 </p>
-                <div id="loading-message" class="hidden mt-4 text-gray-400">Enviant votaciÛ...</div>
-                <div id="success-message" class="hidden mt-4 text-green-400">°VotaciÛ enviada amb Ëxit!</div>
-                <div id="error-message" class="hidden mt-4 text-red-400">Error en enviar la votaciÛ. Intenta-ho de nou.</div>
+                <div id="loading-message" class="hidden mt-4 text-gray-400">Enviant votaci√≥...</div>
+                <div id="success-message" class="hidden mt-4 text-green-400">¬°Votaci√≥ enviada amb √®xit!</div>
+                <div id="error-message" class="hidden mt-4 text-red-400">Error en enviar la votaci√≥. Intenta-ho de nou.</div>
                 <button id="submit-button" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out">
-                    Enviar VotaciÛ
+                    Enviar Votaci√≥
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal per a visualitzar imatges a pantalla completa -->
+    <div id="image-modal" class="image-modal">
+        <div class="image-modal-content">
+            <button class="image-modal-close" onclick="closeImageModal()">&times;</button>
+            <img id="modal-image" src="" alt="Imagen ampliada" style="width:100%; max-width:1920px; height:auto; max-height: 1080;">
         </div>
     </div>
 
@@ -117,26 +204,29 @@
 
             let photosCount = 0;
             const scores = [];
+            let imageIds = [];
             var currentMonth = "";
+            var sheetName = "";
 
             
             // Lista de puntuaciones a usar
             const scoreValues = [4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
             
-            const WEB_APP_URL_POST = 'https://script.google.com/macros/s/AKfycbxPF9G4h-ZLITGnELDxkuligq2DeBcWHemz6pPfApZOSLAsXOco9p-8LJ8fJxrFORnDig/exec';
-
-            const WEB_APP_URL_GET = 'https://script.google.com/macros/s/AKfycbzKQNDiI2E25m62U1hwjwdYRbjG-kTfkrb5igDw02OPRBpsdVjfGDyfMKbQKwRN7lEcPw/exec';
+            //const WEB_APP_URL_POST = 'https://script.google.com/macros/s/AKfycbwT9cpluwUW9JsWIGMiTj454NVb75EmzmtnEHhcp0a7/dev?authuser=0';
+            const WEB_APP_URL_POST = 'https://script.google.com/macros/s/AKfycbxcwa0kcnIZnTymtU-tvIUtSoRx7pZ_CQvcz26TmIvFLsmVKaNg34doDeXViZ1qqJP1qQ/exec';      
+            // const WEB_APP_URL_GET = 'https://script.google.com/macros/s/AKfycbwT9cpluwUW9JsWIGMiTj454NVb75EmzmtnEHhcp0a7/dev?authuser=0';
+            const WEB_APP_URL_GET = 'https://script.google.com/macros/s/AKfycbxBNzOWPXECpYNGsiKVnoFjDoxLFopakZqiAvyF80_QoxTZi-EtIovjj1K7Eit8Vt3y_g/exec';
 
             startQuizButton.addEventListener('click', async () => {
                 const juradoName = juradoNameInput.value.trim();
 
-                // Initial name validation
+                // Validaci√≥ inicial del nom
                 if (!juradoName) {
-                    showError('Si us plau, introdueix un nom v‡lid.');
+                    showError('Si us plau, introdueix un nom v√†lid.');
                     return;
                 }
 
-                // Fetch configuration and row count from App Script
+                // Obtenir configuraci√≥ i comptar files des de l'App Script
                 try {
                     const response = await fetch(WEB_APP_URL_GET);
                     const data = await response.json();
@@ -145,32 +235,36 @@
                         throw new Error(data.error);
                     }
 
-                    // Validate configuration data
+                    // Validar dades de configuraci√≥
                     if (!data.config || !data.config.MES_ACTUAL || !data.config.ESTAT) {
-                        throw new Error('ConfiguraciÛ incompleta');
+                        throw new Error('Configuraci√≥ incompleta');
                     }
 
-                    // Set current month from config
+                    // Establir el mes actual des de la configuraci√≥
                     currentMonth = data.config.MES_ACTUAL;
+                    sheetName = data.config.NOM_FULL || ''; // Obtener nombre de la hoja
                     
 
-                    // Check contest status
+                    // Comprovar l'estat del concurs
                     const contestStatus = data.config.ESTAT.toLowerCase() === "obert";
                     if (!contestStatus) {
-                        throw new Error(`La entrada de puntuacions per al mes ${currentMonth} no est‡ oberta`);
+                        throw new Error(`La entrada de puntuacions per al mes ${currentMonth} no est√† oberta`);
                     }
 
-                    // Process row count for grid generation
+                    // Processar el recompte de files per a la generaci√≥ de la quadr√≠cula
                     photosCount = data.numRows;
                     if (isNaN(photosCount) || photosCount <= 0) {
-                        throw new Error('N˙mero de fotografies inv‡lid');
+                        throw new Error('N√∫mero de fotografies inv√†lid');
                     }
 
-                    // Initialize scores array
+                    // Inicialitzar l'array de puntuacions
                     scores.length = photosCount;
                     scores.fill(null);
 
-                    // Show quiz section
+                    // Obtenir les ID d'imatge per a totes les fotos
+                    await fetchImageIds();
+
+                    // Mostrar la secci√≥ del q√ºestionari
                     juradoNameSection.classList.add('hidden');
                     quizSection.classList.remove('hidden');
                     quizGrid.innerHTML = '';
@@ -181,8 +275,35 @@
                 }
             });
 
+            const fetchImageIds = async () => {
+                try {
+                    const promises = [];
+                    for (let i = 1; i <= photosCount; i++) {
+                        const params = new URLSearchParams({
+                            sheetName: sheetName,
+                            rowNumber: i,
+                            action: 'getImageId' // <-- added action param
+                        });
+                        
+                        promises.push(
+                            fetch(`${WEB_APP_URL_GET}?${params.toString()}`)
+                            .then(response => response.json())
+                            .then(data => data.imageId || null)
+                            .catch(error => {
+                                console.error(`Error fetching image ID for row ${i}:`, error);
+                                return null;
+                            })
+                        );
+                    }
+                    imageIds = await Promise.all(promises);
+                } catch (err) {
+                    console.error('Error fetching image IDs:', err);
+                    imageIds = new Array(photosCount).fill(null);
+                }
+            };
+
             const generateQuizGrid = () => {
-                // Genera la cabecera de la cuadrÌcula
+                // Genera la cabecera de la cuadr√≠cula
                 const headerRow = document.createElement('div');
                 headerRow.className = 'grid-container mb-2 font-bold text-center';
                 headerRow.innerHTML = '<div class="h-10 w-20 flex items-center justify-center"></div>';
@@ -199,13 +320,32 @@
                     row.className = 'grid-container mb-2 items-center';
                     row.setAttribute('data-row-index', i);
 
-                    row.innerHTML = `<div class="bg-gray-700 h-10 w-20 flex items-center justify-center text-gray-300 font-bold text-sm rounded-2xl shadow-md">Foto ${i + 1}</div>`;
+                    // A√±adir contenedor de foto
+                    const photoContainer = document.createElement('div');
+                    photoContainer.className = 'photo-container';
+                    photoContainer.setAttribute('data-image-id', imageIds[i] || '');
+                    photoContainer.setAttribute('data-photo-number', i + 1);
+                    
+                    if (imageIds[i]) {
+                        const img = document.createElement('img');
+                        img.src = `https://drive.google.com/thumbnail?id=${imageIds[i]}&sz=s300`;
+                        img.alt = `Imagen n√∫mero ${i + 1}`;
+                        img.addEventListener('error', () => {
+                            photoContainer.innerHTML = `<span class="text-gray-500 text-xs text-center">Foto ${i + 1}</span>`;
+                        });
+                        photoContainer.appendChild(img);
+                    } else {
+                        photoContainer.innerHTML = `<span class="text-gray-500 text-xs text-center">Foto ${i + 1}</span>`;
+                    }
+                    
+                    photoContainer.addEventListener('click', () => openImageModal(imageIds[i], i + 1));
+                    row.appendChild(photoContainer);
 
                     scoreValues.forEach(score => {
                         const cell = document.createElement('button');
                         cell.className = 'cell-button text-sm';
                         cell.setAttribute('data-score-value', score);
-                        cell.setAttribute('aria-label', `Seleccionar puntuaciÛ ${score} en la fila ${i + 1}`);
+                        cell.setAttribute('aria-label', `Seleccionar puntuaci√≥ ${score} en la fila ${i + 1}`);
                         cell.textContent = score;
                         cell.addEventListener('click', handleCellClick);
                         row.appendChild(cell);
@@ -283,6 +423,34 @@
                 juradoNameSection.appendChild(errorMsg);
                 setTimeout(() => errorMsg.remove(), 3000);
             };
+        });
+
+        // Functions for image modal
+        function openImageModal(imageId, photoNumber) {
+            if (!imageId) return;
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image');
+            modalImg.src = `https://lh3.googleusercontent.com/d/${imageId}=w1920-h1080`;
+            modal.classList.add('active');
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.remove('active');
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById('image-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'image-modal') {
+                closeImageModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
         });
     </script>
 </body>
