@@ -9,7 +9,7 @@ function doPost(e) {
   logToSheet(`Recibida puntuación de ${data.juradoName} para el mes ${data.month}`); 
   // Asegurarse de que el cuerpo de la solicitud no esté vacío
   if (!e || !e.postData || !e.postData.contents) {
-    return ContentService.createTextOutput("Error: No data received.");
+    return ContentService.createTextOutput("Error: No s'han rebut dades.");
   }
 
 
@@ -75,10 +75,10 @@ function doGet(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(config.MES_ACTUAL);
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(config.FULL_PUNTUACIO);
     if (!sheet) {
       return ContentService.createTextOutput(JSON.stringify({
-        error: `No s'ha trobat el full per a les puntuacions del mes ${config.MES_ACTUAL}.`,
+        error: `No s'ha trobat el full per a les puntuacions del mes ${config.FULL_PUNTUACIO}.`,
         status: "error"
       })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -139,15 +139,7 @@ function getImageIdFromSheet(sheetName, rowNumber) {
   try {
     let targetSheetName = sheetName;
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(targetSheetName);
-    
-    if (!sheet) {
-      const configSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Config");
-      if (configSheet) {
-        targetSheetName = configSheet.getRange("B2").getValue();
-        sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(targetSheetName);
-      }
-    }
-    
+       
     if (!sheet) {
       throw new Error(`Sheet "${targetSheetName}" not found`);
     }

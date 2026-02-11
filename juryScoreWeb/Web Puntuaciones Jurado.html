@@ -236,13 +236,13 @@
                     }
 
                     // Validar dades de configuració
-                    if (!data.config || !data.config.MES_ACTUAL || !data.config.ESTAT) {
+                    if (!data.config || !data.config.FULL_PUNTUACIO || !data.config.ESTAT) {
                         throw new Error('Configuració incompleta');
                     }
 
                     // Establir el mes actual des de la configuració
-                    currentMonth = data.config.MES_ACTUAL;
-                    sheetName = data.config.NOM_FULL || ''; // Obtener nombre de la hoja
+                    //currentMonth = data.config.MES_ACTUAL;
+                    sheetName = data.config.FULL_PUNTUACIO || ''; // Obtener nombre de la hoja
                     
 
                     // Comprovar l'estat del concurs
