@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QÜESTIONARI DE PUNTUACIONS</title>
+    <title>PUNTUACIONS CONCURS AGUSTÍ UMBERT 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Estilos personalizados para el gradiente del título */
         .gradient-text {
             background-image: linear-gradient(to right, #60a5fa, #8b5cf6);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -277,25 +278,20 @@
 
             const fetchImageIds = async () => {
                 try {
-                    const promises = [];
-                    for (let i = 1; i <= photosCount; i++) {
-                        const params = new URLSearchParams({
-                            sheetName: sheetName,
-                            rowNumber: i,
-                            action: 'getImageId' // <-- added action param
-                        });
-                        
-                        promises.push(
-                            fetch(`${WEB_APP_URL_GET}?${params.toString()}`)
-                            .then(response => response.json())
-                            .then(data => data.imageId || null)
-                            .catch(error => {
-                                console.error(`Error fetching image ID for row ${i}:`, error);
-                                return null;
-                            })
-                        );
+                    const params = new URLSearchParams({
+                        sheetName: sheetName,
+                        action: 'getAllImageIds'
+                    });
+                    
+                    const response = await fetch(`${WEB_APP_URL_GET}?${params.toString()}`);
+                    const data = await response.json();
+                    
+                    if (data.status === "success") {
+                        imageIds = data.imageIds; // Load all image IDs in strict row order
+                    } else {
+                        console.error('Error fetching image IDs:', data.error);
+                        imageIds = new Array(photosCount).fill(null);
                     }
-                    imageIds = await Promise.all(promises);
                 } catch (err) {
                     console.error('Error fetching image IDs:', err);
                     imageIds = new Array(photosCount).fill(null);

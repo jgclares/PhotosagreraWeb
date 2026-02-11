@@ -44,6 +44,23 @@ function doGet(e) {
   try {
     const action = e && e.parameter && e.parameter.action ? e.parameter.action : 'info';
 
+    // If caller requests all image IDs from the worksheet
+    if (action === 'getAllImageIds') {
+      try {
+        const sheetName = e.parameter.sheetName || '';
+        const imageIds = getAllImageIdsFromSheet(sheetName);
+        return ContentService.createTextOutput(JSON.stringify({
+          imageIds: imageIds,
+          status: "success"
+        })).setMimeType(ContentService.MimeType.JSON);
+      } catch (err) {
+        return ContentService.createTextOutput(JSON.stringify({
+          error: err.toString(),
+          status: "error"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
     // If caller requests an image id for a specific row
     if (action === 'getImageId') {
       try {
@@ -158,6 +175,37 @@ function getImageIdFromSheet(sheetName, rowNumber) {
   } catch (error) {
     logToSheet(`Error getting image ID from sheet ${sheetName}, row ${rowNumber}: ${error.message}`);
     return null;
+  }
+}
+
+// Función para extraer todos los IDs de imagen de la hoja de cálculo
+function getAllImageIdsFromSheet(sheetName) {
+  try {
+    let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+       
+    if (!sheet) {
+      throw new Error(`Sheet "${sheetName}" not found`);
+    }
+    
+    const lastRow = sheet.getLastRow();
+    const imageIds = [];
+    
+    // Start from row 2 (skip header), Column J is column 10
+    for (let row = 2; row <= lastRow; row++) {
+      const imageUrl = sheet.getRange(row, 10).getValue();
+      
+      if (imageUrl && imageUrl.trim() !== "") {
+        const imageId = extractImageIdFromUrl(imageUrl);
+        imageIds.push(imageId);
+      } else {
+        imageIds.push(null);
+      }
+    }
+    
+    return imageIds;
+  } catch (error) {
+    logToSheet(`Error getting all image IDs from sheet ${sheetName}: ${error.message}`);
+    throw error;
   }
 }
 
