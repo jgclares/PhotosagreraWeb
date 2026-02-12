@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QÜESTIONARI DE PUNTUACIONS</title>
+    <title>PUNTUACIONS CONCURS AGUSTÍ UMBERT 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Estilos personalizados para el gradiente del título */
         .gradient-text {
             background-image: linear-gradient(to right, #60a5fa, #8b5cf6);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -141,7 +142,7 @@
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-4 pt-8">
     <div class="w-full max-w-6xl">
         <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-8 gradient-text">
-            Qüestionari de Puntuació 
+            PUNTUACIONS CONCURS AGUSTÍ UMBERT 2026
         </h1>
 
         <div id="jurado-name-section" class="flex flex-col items-center justify-center space-y-4">
@@ -236,13 +237,13 @@
                     }
 
                     // Validar dades de configuració
-                    if (!data.config || !data.config.MES_ACTUAL || !data.config.ESTAT) {
+                    if (!data.config || !data.config.FULL_PUNTUACIO || !data.config.ESTAT) {
                         throw new Error('Configuració incompleta');
                     }
 
                     // Establir el mes actual des de la configuració
-                    currentMonth = data.config.MES_ACTUAL;
-                    sheetName = data.config.NOM_FULL || ''; // Obtener nombre de la hoja
+                    //currentMonth = data.config.MES_ACTUAL;
+                    sheetName = data.config.FULL_PUNTUACIO || ''; // Obtener nombre de la hoja
                     
 
                     // Comprovar l'estat del concurs
@@ -277,25 +278,20 @@
 
             const fetchImageIds = async () => {
                 try {
-                    const promises = [];
-                    for (let i = 1; i <= photosCount; i++) {
-                        const params = new URLSearchParams({
-                            sheetName: sheetName,
-                            rowNumber: i,
-                            action: 'getImageId' // <-- added action param
-                        });
-                        
-                        promises.push(
-                            fetch(`${WEB_APP_URL_GET}?${params.toString()}`)
-                            .then(response => response.json())
-                            .then(data => data.imageId || null)
-                            .catch(error => {
-                                console.error(`Error fetching image ID for row ${i}:`, error);
-                                return null;
-                            })
-                        );
+                    const params = new URLSearchParams({
+                        sheetName: sheetName,
+                        action: 'getAllImageIds'
+                    });
+                    
+                    const response = await fetch(`${WEB_APP_URL_GET}?${params.toString()}`);
+                    const data = await response.json();
+                    
+                    if (data.status === "success") {
+                        imageIds = data.imageIds; // Load all image IDs in strict row order
+                    } else {
+                        console.error('Error fetching image IDs:', data.error);
+                        imageIds = new Array(photosCount).fill(null);
                     }
-                    imageIds = await Promise.all(promises);
                 } catch (err) {
                     console.error('Error fetching image IDs:', err);
                     imageIds = new Array(photosCount).fill(null);
