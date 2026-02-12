@@ -9,15 +9,28 @@ function doPost(e) {
   logToSheet(`Recibida puntuación de ${data.juradoName} para el mes ${data.month}`); 
   // Asegurarse de que el cuerpo de la solicitud no esté vacío
   if (!e || !e.postData || !e.postData.contents) {
-    return ContentService.createTextOutput("Error: No s'han rebut dades.");
+    return ContentService.createTextOutput("Error: No data received.");
   }
 
+ // Default behavior: return config and numRows
+    // Get configuration first
+    let config;
+    try {
+      config = readConfig();
+    } catch (configError) {
+      // Return early with config error
+      return ContentService.createTextOutput(JSON.stringify({
+        error: `Error llegint configuració: ${configError.message}`,
+        status: "error"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
 
+ 
 
   // Obtener la hoja de cálculo activa y la hoja de destino
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(month); // Asegúrate de que este nombre coincida con el de tu hoja
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(config.FULL_PUNTUACIO); // Asegúrate de que este nombre coincida con el de tu hoja
   if (!sheet) {
-    return ContentService.createTextOutput(`No s'ha trobat el full per a les puntuacions del mes ${month}.`).setMimeType(ContentService.MimeType.TEXT);
+    return ContentService.createTextOutput(`No s'ha trobat el full per a les puntuacions: ${config.FULL_PUNTUACIO}.`).setMimeType(ContentService.MimeType.TEXT);
   }
 
   // Encuentra la siguiente columna vacía
